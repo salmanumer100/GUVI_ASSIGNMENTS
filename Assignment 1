@@ -1,0 +1,80 @@
+# GUVI_ASSIGNMENTS
+import re
+import csv
+email_regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+password_regex = re.compile(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{5,}$')
+
+def isValidEmail(email):
+    if re.fullmatch(email_regex, email):
+      return True
+    else:
+      return False
+def isValidPassword(password):
+    if len(password) < 16 and len(password) > 5 and re.fullmatch(password_regex, password):
+      return True
+    else:
+      return False
+def register():
+    print('\nRegister New User\n')
+    email = input('email id: ')
+    if isValidEmail(email):
+        password = input('password: ')
+        if isValidPassword(password):
+            write_file(email, password)
+            print('\nUser Registered Successfully')
+        else:
+            print('\nInvalid Password, Please Try Again')
+    else:
+        print('\nInvalid Username, Please Try Again')    
+        
+def login():
+    email = input('email id: ')
+    auth  = False
+    if isValidEmail(email):
+        password = input('password: ')
+        if isValidPassword(password):
+            if search_file(email, password):
+                print ('\nUser Logged In Successfully')
+            else:
+                print('\nUser Not Found')
+                register()
+        else:
+            print('\nInvalid Password, Please Try Again')
+    else:
+        print('\nInvalid Username, Please Try Again')
+
+def forget_password():
+    email = input('email id: ')
+    if isValidEmail(email):
+        if search_password(email):
+            print ('\nUser Logged In Successfully')
+        else:
+            print('\nUser Not Found')
+            register()
+    else:
+        print('\nInvalid Username, Please Try Again')
+
+def search_file(email, password , mode = 'r', encoding = 'UTF8', newline = ''):
+    with open('users.csv', mode, encoding = encoding, newline = newline) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if email == row[0] and password == row[1]:
+                return True
+        return False
+
+def search_password(email, mode = 'r', encoding = 'UTF8', newline = ''):
+    with open('users.csv', mode, encoding = encoding, newline = newline) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if email == row[0]:
+                print('\nPassword for '+ email + ' is '+ row[1])
+                return True
+        return False
+        
+def write_file(email, password , mode = 'a', encoding = 'UTF8', newline = ''):
+    with open('users.csv', mode, encoding = encoding, newline = newline) as f:
+        writer = csv.writer(f)
+        writer.writerow([email, password])
+
+   
+   
